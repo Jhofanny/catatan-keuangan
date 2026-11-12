@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ judul }} | FinanceTrack{% endblock %}
+{% block content %}
+<div class="form-page">
+  <a class="back-link" href="{{ url_for('index') }}">← Kembali ke dashboard</a>
+  <div class="panel form-panel">
+    <span class="eyebrow">FORM TRANSAKSI</span>
+    <h1>{{ judul }}</h1>
+    <p>Isi data berikut, lalu simpan ke database.</p>
+    {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" class="transaction-form">
+      <input type="hidden" name="_csrf_token" value="{{ token_csrf() }}">
+      <label>Tanggal <input type="date" name="tanggal" value="{{ data['tanggal'] }}" required></label>
+      <label>Jenis transaksi
+        <select name="jenis" required>
+          <option value="pemasukan" {% if data['jenis'] == 'pemasukan' %}selected{% endif %}>Pemasukan</option>
+          <option value="pengeluaran" {% if data['jenis'] == 'pengeluaran' %}selected{% endif %}>Pengeluaran</option>
+        </select>
+      </label>
+      <label>Kategori
+        <select name="kategori" required>
+          {% for k in kategori %}<option value="{{ k }}" {% if data['kategori'] == k %}selected{% endif %}>{{ k }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Jumlah (Rupiah)
+        <input type="number" name="jumlah" min="1" max="999999999999" step="1" placeholder="Contoh: 50000" value="{{ data['jumlah'] }}" required>
+        <small>Gunakan angka saja tanpa Rp, titik, atau koma.</small>
+      </label>
+      <label>Keterangan (opsional)
+        <textarea name="keterangan" rows="3" maxlength="150" placeholder="Contoh: Makan siang di kampus">{{ data['keterangan'] }}</textarea>
+      </label>
+      <div class="form-actions"><button type="submit" class="btn btn-primary">Simpan transaksi</button><a href="{{ url_for('index') }}" class="btn btn-ghost">Batal</a></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

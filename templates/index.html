@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | FinanceTrack{% endblock %}
+{% block content %}
+<section class="heading">
+  <div>
+    <span class="eyebrow">DASHBOARD KEUANGAN</span>
+    <h1>Atur uangmu dengan lebih baik.</h1>
+    <p>Catat setiap transaksi dan pantau kondisi keuanganmu dalam satu tempat.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('tambah') }}">+ Tambah transaksi</a>
+</section>
+<section class="stats" aria-label="Ringkasan keuangan">
+  <div class="stat-card"><span class="stat-label">Total pemasukan</span><strong class="positive">{{ rupiah(ringkasan['pemasukan']) }}</strong><small>{{ 'Bulan ' ~ bulan if bulan else 'Semua waktu' }}</small></div>
+  <div class="stat-card"><span class="stat-label">Total pengeluaran</span><strong class="negative">{{ rupiah(ringkasan['pengeluaran']) }}</strong><small>{{ 'Bulan ' ~ bulan if bulan else 'Semua waktu' }}</small></div>
+  <div class="stat-card highlight"><span class="stat-label">Saldo bersih</span><strong>{{ rupiah(saldo) }}</strong><small>Pemasukan dikurangi pengeluaran</small></div>
+</section>
+<section class="panel">
+  <div class="panel-title">
+    <div><h2>Riwayat transaksi</h2><p>Kelola dan filter catatan keuanganmu.</p></div>
+    <a class="btn btn-ghost" href="{{ url_for('ekspor', jenis=jenis, bulan=bulan) }}">↓ Ekspor CSV</a>
+  </div>
+  <form class="filters" method="get" action="{{ url_for('index') }}">
+    <label>Jenis transaksi
+      <select name="jenis">
+        <option value="" {% if not jenis %}selected{% endif %}>Semua jenis</option>
+        <option value="pemasukan" {% if jenis == 'pemasukan' %}selected{% endif %}>Pemasukan</option>
+        <option value="pengeluaran" {% if jenis == 'pengeluaran' %}selected{% endif %}>Pengeluaran</option>
+      </select>
+    </label>
+    <label>Bulan <input type="month" name="bulan" value="{{ bulan }}"></label>
+    <button class="btn btn-dark" type="submit">Terapkan filter</button>
+    <a class="clear-filter" href="{{ url_for('index') }}">Reset</a>
+  </form>
+  {% if transaksi %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th>Jenis</th><th class="right">Jumlah</th><th class="right">Aksi</th></tr></thead>
+      <tbody>
+        {% for t in transaksi %}
+        <tr>
+          <td class="nowrap">{{ t['tanggal'] }}</td>
+          <td><strong>{{ t['kategori'] }}</strong></td>
+          <td class="notes">{{ t['keterangan'] or '—' }}</td>
+          <td><span class="chip {{ t['jenis'] }}">{{ t['jenis']|capitalize }}</span></td>
+          <td class="right nowrap amount {{ 'positive' if t['jenis'] == 'pemasukan' else 'negative' }}">{{ '+' if t['jenis'] == 'pemasukan' else '−' }} {{ rupiah(t['jumlah']) }}</td>
+          <td><div class="actions"><a class="edit-link" href="{{ url_for('edit', transaksi_id=t['id']) }}">Edit</a>
+            <form method="post" action="{{ url_for('hapus', transaksi_id=t['id']) }}" onsubmit="return confirm('Hapus transaksi ini?');">
+              <input type="hidden" name="_csrf_token" value="{{ token_csrf() }}">
+              <button class="delete-link" type="submit">Hapus</button>
+            </form></div></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty"><span class="empty-symbol">◎</span><h3>Belum ada transaksi</h3><p>Tambah transaksi pertama atau ubah filternya.</p><a href="{{ url_for('tambah') }}" class="btn btn-primary">Catat transaksi</a></div>
+  {% endif %}
+</section>
+{% endblock %}

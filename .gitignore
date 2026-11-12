@@ -1,0 +1,23 @@
+# Virtual environment
+.venv/
+venv/
+
+# Database nyata dan file internal Flask
+instance/
+*.sqlite3
+*.db
+
+# File Python sementara
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# File pribadi / rahasia
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

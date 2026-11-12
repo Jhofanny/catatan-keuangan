@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FinanceTrack - aplikasi pencatatan keuangan pribadi dengan Python Flask dan SQLite.">
+  <title>{% block title %}FinanceTrack{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">↗</span> FinanceTrack</a>
+      <span class="nav-caption">Personal Finance Manager</span>
+    </div>
+  </header>
+  <main class="container main">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="alert {{ category }}" role="status">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="container footer">FinanceTrack · Dibuat dengan Python, Flask & SQLite</footer>
+</body>
+</html>
